@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +26,15 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Environment env;
 
     @GetMapping("/health_check")
     public String status(HttpServletRequest request) {
-        return String.format("It's working in User Service on Port %s", request.getServerPort());
+        return String.format("It's working in User Service"
+                + ", port(local.server.port)=" + env.getProperty("local.server.port")
+                + ", port(server.port)=" + env.getProperty("server.port")
+                + ", ip(gateway.ip)=" + env.getProperty("gateway.ip")
+                + ", token expiration hours=" + env.getProperty("token.expiration-hour"));
     }
 
     @PostMapping("/signup")
@@ -48,7 +54,7 @@ public class UserController {
     @PostMapping("/signin")
     @ResponseStatus(value = HttpStatus.OK)
     public String loginUser(@RequestBody RequestLogin requestLogin, HttpServletResponse response) {
-        UserDto userDto = userService.matchAccount(requestLogin.getEmail(), requestLogin.getPassword());
+        UserDto userDto = userService.matchAccount(requestLogin.getEmail(), requestLogin.getPwd());
 
         String accessToken = jwtTokenProvider.createToken(userDto.getUserId(), "ROLE_USER");
         response.setHeader("Authorization", String.format("Bearer %s", accessToken));

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,9 +25,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final String[] allowedUrls = {
-            "/", "/v2/api-docs", "/swagger-resources/**",
-            "/swagger-ui.html", "/swagger-ui/**", "/v3/**",
-            "/h2-console/**", "/signin", "/signup", "/health_check"
+            "/", "/actuator/**", "/h2-console/**",
+             "/signin", "/signup", "/health_check"
     };
 
     @Bean
@@ -42,8 +42,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(withDefaults())
-                .formLogin(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeRequests((authz) -> authz
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated()

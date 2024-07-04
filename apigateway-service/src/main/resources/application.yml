@@ -36,6 +36,14 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
+            - Path=/user-service/actuator/**
+            - Method=GET,POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
             - Path=/user-service/**
             - Method=GET
           filters:
@@ -58,7 +66,13 @@ eureka:
     service-url:
       defaultzone: http://localhost:8761/eureka
 
-token:
-  secret-key: Askjagljkldagmlaksd3jl686ksnadjljaskfjl4jksanklndksadklsajk4dnwlqwuiqe66weqweq
-  expiration-hour: 3
-  issuer: testMe
+#token:
+#  secret-key: Askjagljkldagmlaksd3jl686ksnadjljaskfjl4jksanklndksadklsajk4dnwlqwuiqe66weqweq
+#  expiration-hour: 3
+#  issuer: testMe
+
+management:
+  endpoint:
+    web:
+      exposure:
+        include: refresh, health, beans, httpexchanges

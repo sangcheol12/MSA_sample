@@ -1,7 +1,7 @@
 token:
   secret-key: Askjagljkldagmlaksd3jl686ksnadjljaskfjl4jksanklndksadklsajk4dnwlqwuiqe66weqweq
   expiration-hour: 3
-  issuer: ecommerce
+  issuer: prod
 
 gateway:
   ip: localhost_9
